@@ -91,11 +91,12 @@ def Hrrt(ty, tz, l):
 
 class IiwaSunrise(object):
   def __init__(self):
-    init_node('iiwa_sunrise', log_level = INFO)
+    #init_node('iiwa_sunrise', log_level = INFO)
+    init_node('iiwa', log_level = INFO)
 
     hardware_interface = get_param('~hardware_interface', 'PositionJointInterface')
     self.robot_name = get_param('~robot_name', 'iiwa')
-    model = get_param('~model', 'iiwa14')
+    model = get_param('~model', 'iiwa7')
     tool_length = get_param('~tool_length', 0.0)
 
     if model == 'iiwa7':
@@ -122,16 +123,19 @@ class IiwaSunrise(object):
                         '{}_joint_6'.format(self.robot_name),
                         '{}_joint_7'.format(self.robot_name)]
 
+    # Create subscribers
     joint_states_sub = Subscriber('joint_states', JointState, self.jointStatesCb, queue_size = 1)
     command_pose_sub = Subscriber('command/CartesianPose', PoseStamped, self.commandPoseCb, queue_size = 1)
     command_pose_lin_sub = Subscriber('command/CartesianPoseLin', PoseStamped, self.commandPoseLinCb, queue_size = 1)
     redundancy_sub = Subscriber('command/redundancy', Float64, self.redundancyCb, queue_size = 1)
     joint_position_sub = Subscriber('command/JointPosition', JointPosition, self.jointPositionCb, queue_size = 1)
 
+    # Create publishers
     self.state_pose_pub = Publisher('state/CartesianPose', PoseStamped, queue_size = 1)
     self.joint_trajectory_pub = Publisher(
         '{}_trajectory_controller/command'.format(hardware_interface), JointTrajectory, queue_size = 1)
 
+    # Create services
     path_parameters_configuration_srv = Service(
         'configuration/setSmartServoLimits', SetSmartServoJointSpeedLimits, self.handlePathParametersConfiguration)
     path_parameters_lin_configuration_srv = Service(
@@ -142,13 +146,17 @@ class IiwaSunrise(object):
     spin()
 
   def jointPositionCb(self, msg):
+    # joint_position_sub
+    print("JointPosition Command Init")
     self.publishJointPositionCommand(
         [msg.position.a1, msg.position.a2, msg.position.a3, msg.position.a4, msg.position.a5, msg.position.a6, msg.position.a7])
 
   def handleSmartServoConfiguration(self, request):
+    # smart_servo_configuration_srv
     return ConfigureControlModeResponse(True, '')
 
   def handlePathParametersConfiguration(self, request):
+    # path_parameters_configuration_srv
     loginfo('setting path parameters')
 
     v = request.joint_relative_velocity
@@ -160,6 +168,7 @@ class IiwaSunrise(object):
       return SetSmartServoJointSpeedLimitsResponse(False, '')
 
   def handlePathParametersLinConfiguration(self, request):
+    # path_parameters_lin_configuration_srv
     loginfo('setting path parameters linear')
 
     v = request.max_cartesian_velocity.linear.x
@@ -171,9 +180,11 @@ class IiwaSunrise(object):
       return SetSmartServoLinSpeedLimitsResponse(False, '')
 
   def redundancyCb(self, msg):
+    # redundancy_sub
     self.tr = msg.data
 
   def jointStatesCb(self, msg):
+    # joint_states_sub
     t = msg.position
 
     H02 = Hrrt(t[1], t[0], self.l02)
@@ -195,6 +206,7 @@ class IiwaSunrise(object):
               x = q0E[0], y = q0E[1], z = q0E[2], w = q0E[3]))))
 
   def commandPoseCb(self, msg):
+    # command_pose_sub
     T0 = clock()
 
     t = 7 * [0.0]
@@ -248,15 +260,18 @@ class IiwaSunrise(object):
     logdebug('timing: %s ms', 1.0e3 * (clock() - T0))
 
   def commandPoseLinCb(self, msg):
+    # command_pose_lin_sub
     self.commandPoseCb(msg)
 
   def publishJointPositionCommand(self, t):
+    # publish commands
     jtp = JointTrajectoryPoint()
     jtp.positions = t
     jtp.time_from_start = rospy.Duration.from_sec(self.v)
     jt = JointTrajectory()
     jt.joint_names = self.joint_names
     jt.points.append(jtp)
+    print("Joint Command Published")
     self.joint_trajectory_pub.publish(jt)
 
 if __name__ == "__main__":
