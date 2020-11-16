@@ -50,14 +50,13 @@ int main (int argc, char **argv) {
   goal_pose.pose.orientation.z = 0.005;
   goal_pose.pose.orientation.w = 0.9;
 
-
-  while(checkDiff(current_pose, goal_pose) > 0.7){
+  while(checkDiff(current_pose, goal_pose) > 0.4){
     iiwa_pose_command.setPose(goal_pose);
 
     ros::Duration(2.0).sleep();
     std::cout << "-------------------" << std::endl;
   }
-
+  
   /*
   iiwa_ros::state::CartesianPose iiwa_pose_state;
   iiwa_ros::state::JointPosition iiwa_joint_state;

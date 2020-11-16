@@ -15,7 +15,10 @@ catkin_package()
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(trial src/trial1.cpp)
+add_executable(trial src/command_robot.cpp)
 add_dependencies(trial iiwa_msgs_generate_messages_cpp)
 target_link_libraries(trial ${catkin_LIBRARIES})
 
+add_executable(main_pose src/trial1.cpp)
+add_dependencies(main_pose iiwa_msgs_generate_messages_cpp)
+target_link_libraries(main_pose ${catkin_LIBRARIES})
