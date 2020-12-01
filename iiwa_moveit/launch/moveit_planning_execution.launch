@@ -14,6 +14,7 @@
     <arg name="model" default="iiwa7"/>
     <arg name="rviz" default="true" />
     <arg name="config_name" default ="moveit.rviz" />
+
     
     <remap from="/$(arg hardware_interface)_trajectory_controller/follow_joint_trajectory" 
            to="/$(arg robot_name)/$(arg hardware_interface)_trajectory_controller/follow_joint_trajectory" />
