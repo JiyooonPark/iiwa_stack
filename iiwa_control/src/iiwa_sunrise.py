@@ -147,7 +147,6 @@ class IiwaSunrise(object):
 
   def jointPositionCb(self, msg):
     # joint_position_sub
-    print("JointPosition Command Init")
     self.publishJointPositionCommand(
         [msg.position.a1, msg.position.a2, msg.position.a3, msg.position.a4, msg.position.a5, msg.position.a6, msg.position.a7])
 
