@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  
+    <arg name="sim" default="true"/>
+    
+    <!-- Here we call the ROS node we have written, with the parameters on top   -->
+    <node ns="iiwa" name="updown" pkg="iiwa_examples" type="updown" respawn="false" output="screen">
+      <param name="sim" value="$(arg sim)"/>
+    </node>
+
+</launch>
