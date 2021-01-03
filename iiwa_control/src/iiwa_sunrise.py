@@ -270,7 +270,6 @@ class IiwaSunrise(object):
     jt = JointTrajectory()
     jt.joint_names = self.joint_names
     jt.points.append(jtp)
-    print("Joint Command Published")
     self.joint_trajectory_pub.publish(jt)
 
 if __name__ == "__main__":

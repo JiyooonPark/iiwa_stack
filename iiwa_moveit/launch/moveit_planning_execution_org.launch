@@ -24,7 +24,7 @@
     <group if="$(arg sim)">
         
         <!-- Load Gazebo with given values -->
-        <include file="$(find iiwa_gazebo)/launch/iiwa_gazebo_with_sunrise.launch">
+        <include file="$(find iiwa_gazebo)/launch/iiwa_gazebo.launch">
             <arg name="hardware_interface" value="$(arg hardware_interface)"/>
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="model" value="$(arg model)"/>

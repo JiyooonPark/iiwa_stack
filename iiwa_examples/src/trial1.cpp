@@ -42,17 +42,17 @@ int main (int argc, char **argv) {
 
   geometry_msgs::PoseStamped goal_pose;
   goal_pose.header.frame_id = current_pose.header.frame_id;
-  goal_pose.pose.position.x = 0.3;
+  goal_pose.pose.position.x = 0.6;
   goal_pose.pose.position.y = 0;
-  goal_pose.pose.position.z = 0.9;
-  goal_pose.pose.orientation.x = 0.01;
-  goal_pose.pose.orientation.y = 0.005;
-  goal_pose.pose.orientation.z = 0.005;
-  goal_pose.pose.orientation.w = 0.9;
+  goal_pose.pose.position.z = 0.4;
+  goal_pose.pose.orientation.x = 0.0;
+  goal_pose.pose.orientation.y = 0.8;
+  goal_pose.pose.orientation.z = 0.0;
+  goal_pose.pose.orientation.w = 0.8;
 
-  while(checkDiff(current_pose, goal_pose) > 0.4){
+  while(checkDiff(current_pose, goal_pose) > 0.2){
     iiwa_pose_command.setPose(goal_pose);
-
+    
     ros::Duration(2.0).sleep();
     std::cout << "-------------------" << std::endl;
   }
