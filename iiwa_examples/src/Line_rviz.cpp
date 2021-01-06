@@ -44,6 +44,8 @@ int main( int argc, char** argv )
     line.type = visualization_msgs::Marker::LINE_STRIP;
     line.scale.x = 0.01;   // markers use only the x component of scale, for the line width
     // Line strip is blue
+    line.color.r = 1.0;
+    line.color.g = 1.0;
     line.color.b = 1.0;
     line.color.a = 1.0;
 

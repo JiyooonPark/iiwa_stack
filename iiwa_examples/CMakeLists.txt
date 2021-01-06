@@ -27,6 +27,6 @@ add_executable(drawing_plane src/DrawingPlane.cpp)
 add_dependencies(drawing_plane iiwa_msgs_generate_messages_cpp)
 target_link_libraries(drawing_plane ${catkin_LIBRARIES})
 
-add_executable(dynamic_lines src/Line_rviz.cpp)
+add_executable(dynamic_lines src/Line_rviz_org.cpp)
 add_dependencies(dynamic_lines iiwa_msgs_generate_messages_cpp)
 target_link_libraries(dynamic_lines ${catkin_LIBRARIES})

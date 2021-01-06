@@ -81,6 +81,8 @@ int main( int argc, char** argv )
     points.color.a = 1.0;
 
     // Line strip is blue
+    line_strip.color.r = 1.0;
+    line_strip.color.g = 1.0;
     line_strip.color.b = 1.0;
     line_strip.color.a = 1.0;
 
@@ -108,14 +110,13 @@ int main( int argc, char** argv )
       line_list.points.push_back(p);
       p.z += 1.0;
       line_list.points.push_back(p);
-
-      marker_pub.publish(line_strip);
+      
       //std::cout << y << " " << z << std::endl;
     }
 // %EndTag(HELIX)%
 
     //marker_pub.publish(points);
-    
+    marker_pub.publish(line_strip);
     marker_pub.publish(line_list);
 
     r.sleep();
