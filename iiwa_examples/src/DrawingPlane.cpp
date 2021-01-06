@@ -10,8 +10,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <ros/package.h>
 
-#define TXT_FILE "/home/glab/Downloads/src/Bear_Coordinates.txt"
+#define TXT_FILE "/input/Bear_Coordinates.txt"
 
 using namespace std;
 
@@ -85,7 +86,7 @@ int main (int argc, char **argv) {
  
 
   // TXT file with list of coordinates
-  ifstream txt(TXT_FILE);
+  ifstream txt(ros::package::getPath("iiwa_examples")+TXT_FILE);
   // check if text file is well opened
   if(!txt.is_open()){
     cout << "FILE NOT FOUND \n" << endl;
