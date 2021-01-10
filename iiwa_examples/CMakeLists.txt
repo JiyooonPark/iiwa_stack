@@ -22,3 +22,11 @@ target_link_libraries(updown ${catkin_LIBRARIES})
 add_executable(main_pose src/trial1.cpp)
 add_dependencies(main_pose iiwa_msgs_generate_messages_cpp)
 target_link_libraries(main_pose ${catkin_LIBRARIES})
+
+add_executable(drawing_plane src/DrawingPlane.cpp)
+add_dependencies(drawing_plane iiwa_msgs_generate_messages_cpp)
+target_link_libraries(drawing_plane ${catkin_LIBRARIES})
+
+add_executable(dynamic_lines src/Line_rviz_org.cpp)
+add_dependencies(dynamic_lines iiwa_msgs_generate_messages_cpp)
+target_link_libraries(dynamic_lines ${catkin_LIBRARIES})
