@@ -21,6 +21,7 @@
         <arg name="hardware_interface" value="$(arg hardware_interface)" />
         <arg name="robot_name" value="$(arg robot_name)" />
         <arg name="model" value="$(arg model)" />
+	<arg name="world" value="iiwa_drawing.world" />
     </include>
     
     <!-- Spawn controllers - it uses a JointTrajectoryController -->
