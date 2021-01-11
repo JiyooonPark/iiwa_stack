@@ -1,10 +1,8 @@
-#include <iiwa_ros/state/cartesian_pose.hpp>
-#include <iiwa_ros/state/joint_position.hpp>
-#include <iiwa_ros/command/cartesian_pose.hpp>
-#include <iiwa_ros/command/joint_position.hpp>
-#include <iiwa_ros/service/time_to_destination.hpp>
+#include "iiwa_ros/iiwa_ros.hpp"
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit_msgs/DisplayTrajectory.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 #include <ros/package.h>
 #include <cmath>
 #include <stdio.h>
@@ -17,16 +15,6 @@
 
 using namespace std;
 using moveit::planning_interface::MoveItErrorCode;
-
-iiwa_ros::command::JointPosition iiwa_joint_command;
-iiwa_ros::command::CartesianPose iiwa_pose_command;
-iiwa_msgs::JointPosition current_joint_position;
-iiwa_msgs::JointPosition iiwa_joint_position;
-iiwa_msgs::CartesianPose iiwa_cartesian_command;
-geometry_msgs::PoseStamped current_cartesian_position, command_cartesian_position, start, end;
-std::string joint_position_topic, cartesian_position_topic;
-std::vector<geometry_msgs::Pose> drawing_stroke;
-std::vector<geometry_msgs::Pose> linear_path;
 
 // Create MoveGroup
 static const std::string PLANNING_GROUP = "manipulator";
@@ -50,14 +38,24 @@ int main (int argc, char **argv) {
     // Initialize ROS
     ros::init(argc, argv, "UpdownMoveit");
     ros::NodeHandle nh("~");
-    ros::Subscriber sub;
+    nh.param("sim", sim, true);
+
 
     // ROS spinner.
     ros::AsyncSpinner spinner(1);
     spinner.start();
     
     std::string movegroup_name, ee_link;
-    nh.param("sim", sim, true);
+    geometry_msgs::PoseStamped current_cartesian_position, command_cartesian_position, start, end;
+    std::string joint_position_topic, cartesian_position_topic;
+    std::vector<geometry_msgs::Pose> drawing_stroke;
+    std::vector<geometry_msgs::Pose> linear_path;
+    geometry_msgs::Pose drawing_point;
+    geometry_msgs::Pose path_point;
+
+    // Dynamic parameters. Last arg is the default value. You can assign these from a launch file.
+    nh.param<std::string>("move_group", movegroup_name, PLANNING_GROUP);
+    nh.param<std::string>("ee_link", ee_link, EE_LINK);    
 
     // Create Move Group
     moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
@@ -68,22 +66,8 @@ int main (int argc, char **argv) {
     move_group.setPlanningTime(0.5);
     move_group.setPlannerId(PLANNING_GROUP+"[RRTConnectkConfigDefault]");
     move_group.setEndEffectorLink(ee_link);
-    
-    if(sim == false){ // if real robot is operated
-        // init nodes
-        iiwa_pose_command.init("iiwa");
-        iiwa_joint_command.init("iiwa");
-        ROS_INFO("SIMULATION OFF");
-    }
-    else {  // if simulation
-        ROS_INFO("SIMULATION ON");
-        ROS_INFO("Planning frame: %s", move_group.getPlanningFrame().c_str());
-        ROS_INFO("End effector link: %s", move_group.getEndEffectorLink().c_str());
-    }
-  
-    // Dynamic parameters. Last arg is the default value. You can assign these from a launch file.
-    nh.param<std::string>("move_group", movegroup_name, PLANNING_GROUP);
-    nh.param<std::string>("ee_link", ee_link, EE_LINK);
+    ROS_INFO("Planning frame: %s", move_group.getPlanningFrame().c_str());
+    ROS_INFO("End effector link: %s", move_group.getEndEffectorLink().c_str());
 
     // Dynamic parameter to choose the rate at wich this node should run
     double ros_rate;
@@ -92,7 +76,6 @@ int main (int argc, char **argv) {
 
     int direction = 1;
     MoveItErrorCode success_plan = MoveItErrorCode::FAILURE, motion_done = MoveItErrorCode::FAILURE;
-    
     
     while (ros::ok()){
         ros::Duration(5).sleep(); // wait for 2 sec

@@ -14,6 +14,7 @@
     <arg name="model" default="iiwa7"/>
     <arg name="rviz" default="true" />
     <arg name="trajectory" default="true" />
+    <arg name="world" default="iiwa_drawing.world" />
     
     <remap from="/$(arg hardware_interface)_trajectory_controller/follow_joint_trajectory" 
            to="/$(arg robot_name)/$(arg hardware_interface)_trajectory_controller/follow_joint_trajectory" />
@@ -24,11 +25,12 @@
     <group if="$(arg sim)">
         
         <!-- Load Gazebo with given values -->
-        <include file="$(find iiwa_gazebo)/launch/iiwa_gazebo_drawing.launch">
+        <include file="$(find iiwa_gazebo)/launch/iiwa_gazebo.launch">
             <arg name="hardware_interface" value="$(arg hardware_interface)"/>
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="model" value="$(arg model)"/>
             <arg name="trajectory" value="$(arg trajectory)"/>
+            <arg name="world" value="$(arg world)" />
         </include>
     </group>
     

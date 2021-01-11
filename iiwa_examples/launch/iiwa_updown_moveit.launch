@@ -8,6 +8,7 @@
   <!--  This loads the robot description  -->
   <include file="$(find iiwa_examples)/launch/moveit_planning_drawing.launch">
     <arg name="sim" value="true"/>
+    <arg name="world" value="iiwa.world"/>
   </include>
     
   <!-- Here we call the ROS node we have written, with the parameters on top   -->

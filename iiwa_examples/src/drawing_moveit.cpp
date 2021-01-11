@@ -1,8 +1,4 @@
-#include <iiwa_ros/state/cartesian_pose.hpp>
-#include <iiwa_ros/state/joint_position.hpp>
-#include <iiwa_ros/command/cartesian_pose.hpp>
-#include <iiwa_ros/command/joint_position.hpp>
-#include <iiwa_ros/service/time_to_destination.hpp>
+#include "iiwa_ros/iiwa_ros.hpp"
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit_msgs/DisplayTrajectory.h>
@@ -20,18 +16,6 @@
 
 using namespace std;
 using moveit::planning_interface::MoveItErrorCode;
-
-iiwa_ros::command::JointPosition iiwa_joint_command;
-iiwa_ros::command::CartesianPose iiwa_pose_command;
-iiwa_msgs::JointPosition current_joint_position;
-iiwa_msgs::JointPosition iiwa_joint_position;
-iiwa_msgs::CartesianPose iiwa_cartesian_command;
-geometry_msgs::PoseStamped current_cartesian_position, command_cartesian_position, start, end;
-std::string joint_position_topic, cartesian_position_topic;
-std::vector<geometry_msgs::Pose> drawing_stroke;
-std::vector<geometry_msgs::Pose> linear_path;
-geometry_msgs::Pose drawing_point;
-geometry_msgs::Pose path_point;
 
 // Create MoveGroup
 static const std::string PLANNING_GROUP = "manipulator";
@@ -55,14 +39,26 @@ int main (int argc, char **argv) {
     // Initialize ROS
     ros::init(argc, argv, "CommandRobotMoveit");
     ros::NodeHandle nh("~");
-    ros::Subscriber sub;
+    nh.param("sim", sim, true);
 
     // ROS spinner.
     ros::AsyncSpinner spinner(1);
     spinner.start();
     
+    // iiwa_ros::iiwa_ros my_iiwa;
+    // my_iiwa.init();
+
     std::string movegroup_name, ee_link;
-    nh.param("sim", sim, true);
+    geometry_msgs::PoseStamped current_cartesian_position, command_cartesian_position, start, end;
+    std::string joint_position_topic, cartesian_position_topic;
+    std::vector<geometry_msgs::Pose> drawing_stroke;
+    std::vector<geometry_msgs::Pose> linear_path;
+    geometry_msgs::Pose drawing_point;
+    geometry_msgs::Pose path_point;
+
+    // Dynamic parameters. Last arg is the default value. You can assign these from a launch file.
+    nh.param<std::string>("move_group", movegroup_name, PLANNING_GROUP);
+    nh.param<std::string>("ee_link", ee_link, EE_LINK);
 
     // Create Move Group
     moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
@@ -74,28 +70,19 @@ int main (int argc, char **argv) {
     const robot_state::JointModelGroup* joint_model_group =
       move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
 
-    namespace rvt = rviz_visual_tools;
-    moveit_visual_tools::MoveItVisualTools visual_tools("iiwa_link_0");
-    visual_tools.deleteAllMarkers();
-    visual_tools.trigger();
-
     // Configure Move Group
     move_group.setPlanningTime(0.5);
     move_group.setPlannerId(PLANNING_GROUP+"[RRTConnectkConfigDefault]");
     move_group.setEndEffectorLink(ee_link);
-    
-    if(sim == false){ // if real robot is operated
-        // init nodes
-        iiwa_pose_command.init("iiwa");
-        iiwa_joint_command.init("iiwa");
-        ROS_INFO("SIMULATION OFF");
+    ROS_INFO("Planning frame: %s", move_group.getPlanningFrame().c_str());
+    ROS_INFO("End effector link: %s", move_group.getEndEffectorLink().c_str());
+
+    // Moveit Visualization Tool 
+    moveit_visual_tools::MoveItVisualTools visual_tools("iiwa_link_0");
+    if (sim == true) { 
+        visual_tools.deleteAllMarkers();
+        visual_tools.trigger();
     }
-    else {  // if simulation
-        ROS_INFO("SIMULATION ON");
-        ROS_INFO("Planning frame: %s", move_group.getPlanningFrame().c_str());
-        ROS_INFO("End effector link: %s", move_group.getEndEffectorLink().c_str());
-    }
-  
 
     // TXT file with list of coordinates
     ifstream txt(ros::package::getPath("iiwa_examples")+TXT_FILE);
@@ -105,31 +92,10 @@ int main (int argc, char **argv) {
         return 1;
     }
 
-    // // Dynamic parameters. Last arg is the default value. You can assign these from a launch file.
-    // nh.param<string>("joint_position_topic", joint_position_topic, "/iiwa/state/JointPosition");
-    // nh.param<string>("cartesian_position_topic", cartesian_position_topic, "/iiwa/state/CartesianPose");
-
-    // Dynamic parameters. Last arg is the default value. You can assign these from a launch file.
-    nh.param<std::string>("move_group", movegroup_name, PLANNING_GROUP);
-    nh.param<std::string>("ee_link", ee_link, EE_LINK);
-
-    // // Dynamic parameter to choose the rate at wich this node should run
-    // double ros_rate;
-    // nh.param("ros_rate", ros_rate, 0.01); // 0.1 Hz = 10 seconds
-    // ros::Rate* loop_rate_ = new ros::Rate(ros_rate);
-
-    // // Subscribers and publishers
-    // ros::Subscriber sub_joint_position = nh.subscribe(joint_position_topic, 1, jointPositionCallback);
-    // ros::Subscriber sub_cartesian_position = nh.subscribe(cartesian_position_topic, 1, cartesianPositionCallback);
-
     string line;
     bool init = false;
     double x, y, z, fraction;
     MoveItErrorCode success_plan = MoveItErrorCode::FAILURE, motion_done = MoveItErrorCode::FAILURE;
-
-    // to draw lines in rviz
-    ros::Publisher point_pub = nh.advertise<geometry_msgs::Point>("drawing_point", 100);
-    geometry_msgs::Point point;
     
     // initialization befroe start drawing
     while (ros::ok() && !init){
@@ -152,7 +118,7 @@ int main (int argc, char **argv) {
         }
         ROS_INFO("Moved to the initial position");
         ROS_INFO("Sleeping 3 seconds before starting ... ");
-        ros::Duration(3).sleep(); // wait for 2 sec
+        ros::Duration(3).sleep(); // wait for 3 sec
         
         init = true;
         current_cartesian_position = move_group.getCurrentPose(ee_link);   
@@ -182,7 +148,6 @@ int main (int argc, char **argv) {
 
             // draw a stroke
             ROS_INFO("Drawing %d th stroke ...", stroke_num);
-
             fraction = move_group.computeCartesianPath(drawing_stroke, eef_step, jump_threshold, trajectory);
             my_plan.trajectory_ = trajectory;
             
@@ -190,17 +155,17 @@ int main (int argc, char **argv) {
             if (fraction < 0.5) ROS_WARN_STREAM("LINE DRAWING ERROR");
             
             motion_done = move_group.execute(my_plan); //ros::Duration(0.1).sleep();
-            if (motion_done == MoveItErrorCode::SUCCESS){
-                visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group, rviz_visual_tools::colors::WHITE);
-                visual_tools.trigger();
+            if (sim == true){   // Rviz drawing visualization
+                if (motion_done == MoveItErrorCode::SUCCESS){
+                    visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group, rviz_visual_tools::colors::WHITE);
+                    visual_tools.trigger();
+                }
+                else {
+                    ROS_WARN_STREAM("LINE EXECUTION ERROR");
+                    visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group, rviz_visual_tools::colors::RED);
+                    visual_tools.trigger();
+                }
             }
-            else {
-                ROS_WARN_STREAM("LINE EXECUTION ERROR");
-                visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group, rviz_visual_tools::colors::RED);
-                visual_tools.trigger();
-            }
-
-            // cout << "################ drawing line status: " << draw_line << endl;
 
             command_cartesian_position = move_group.getCurrentPose(ee_link);  
 
@@ -246,7 +211,6 @@ int main (int argc, char **argv) {
             drawing_point.position.y = y;
             drawing_point.position.z = z;
             drawing_stroke.push_back(drawing_point); // push the point
-            // cout << y << " " << z << endl;
 
         }
     }
