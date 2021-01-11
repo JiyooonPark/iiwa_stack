@@ -59,9 +59,10 @@
             <arg name="model" value="$(arg model)" />
         </include>
 
-        <!--include if="$(arg rviz)" file="$(find iiwa_moveit)/launch/moveit_rviz.launch">
+        <include if="$(arg rviz)" file="$(find iiwa_moveit)/launch/moveit_rviz.launch">
             <arg name="config" value="true"/>
-        </include-->
+            <arg name="config_name" value="moveit_drawing.rviz"/>
+        </include>
     </group>
     
 </launch>
