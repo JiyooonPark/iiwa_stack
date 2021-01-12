@@ -147,6 +147,7 @@
       - iiwa_joint_7
 
     constraints:
+      stopped_velocity_tolerance: 0
       goal_time: 0.5                   # Override default
 
     state_publish_rate:  25            # Override default
