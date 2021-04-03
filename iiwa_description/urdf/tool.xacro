@@ -28,7 +28,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-	<mesh filename="package://iiwa_tool_description/meshes/visual/tool.stl"/>
+	      <mesh filename="package://iiwa_description/meshes/tool/visual/tool.stl"/>
 	<!-- 	<cylinder length="0.1275" radius="0.020"/> -->
       </geometry>
       <material name="Grey"/>
@@ -36,7 +36,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-	<mesh filename="package://iiwa_tool_description/meshes/visual/tool.stl"/>
+	      <mesh filename="package://iiwa_description/meshes/tool/collision/tool.stl"/>
 	<!-- 	<cylinder length="0.1275" radius="0.020"/> -->
       </geometry>
       <material name="Grey"/>
