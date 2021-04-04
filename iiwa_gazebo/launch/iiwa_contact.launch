@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Loads the Gazebo world. -->
+    <include file="$(find iiwa_gazebo)/launch/iiwa_gazebo.launch">
+        <arg name="hardware_interface" value="PositionJointInterface" />
+        <arg name="robot_name" value="iiwa" />
+        <arg name="model" value="iiwa7_flange" />
+        <arg name="world" value="iiwa_contact" />
+        <arg name="paused" value="true" />
+    </include>
+</launch>
