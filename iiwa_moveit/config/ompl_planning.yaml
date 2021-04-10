@@ -53,6 +53,7 @@ planner_configs:
   PRMstarkConfigDefault:
     type: geometric::PRMstar
 manipulator:
+  longest_valid_segment_fraction: 0.001
   planner_configs:
     - SBLkConfigDefault
     - ESTkConfigDefault
@@ -65,3 +66,6 @@ manipulator:
     - TRRTkConfigDefault
     - PRMkConfigDefault
     - PRMstarkConfigDefault
+
+default_planner_config: TRRTkConfigDefault
+default_workspace_bounds: 0.7

@@ -4,6 +4,7 @@
   <arg name="hardware_interface" default="PositionJointInterface"/>
   <arg name="robot_name" default="iiwa"/>
   <arg name="model" default="iiwa7"/>
+  <arg name="pipeline" default="ompl"/>
 
   <include file="$(find iiwa_moveit)/launch/planning_context.launch">
     <arg name="load_robot_description" value="true"/>
@@ -32,7 +33,7 @@
 
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find iiwa_moveit)/launch/planning_pipeline.launch.xml">
-    <arg name="pipeline" value="ompl" />
+    <arg name="pipeline" value="$(arg pipeline)" />
   </include>
 
   <!-- Trajectory Execution Functionality -->

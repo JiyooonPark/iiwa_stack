@@ -11,7 +11,7 @@
   <!-- Tool properties -->
   <xacro:property name="robot_name" value="iiwa" />
   <xacro:property name="tool_mass" value="0.200" />
-  <xacro:property name="tool_joint_offset" value="0.0155 0.00 0.0275" />
+  <xacro:property name="tool_joint_offset" value="0.0155 0.00 0.0575" />
   <xacro:property name="tool_link_offset" value="0.00 0.00 0.00" />
   
   <!--  Here we define a dummy joint between the tip of the iiwa7 and the base of the tool. 
