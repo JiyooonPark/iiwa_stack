@@ -11,7 +11,7 @@
   <!-- camera properties -->
   <xacro:property name="robot_name" value="iiwa" />
   <xacro:property name="camera_mass" value="0.200" />
-  <xacro:property name="camera_joint_offset" value="0.00 0.00 0.00" />
+  <xacro:property name="camera_joint_offset" value="0.00 0.00 0.05" />
   <xacro:property name="camera_link_offset" value="0.00 0.00 0.1275" />
   <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
 
@@ -21,25 +21,27 @@
   <joint name="camera_joint" type="fixed">
     <parent link="${robot_name}_link_ee" />
     <child link = "camera_link" />
-    <origin xyz="${camera_joint_offset}" rpy="1.57 3.14 0" />  
+    <origin xyz="${camera_joint_offset}" rpy="0 -1.57 1.57" />  
   </joint>
   
   <!-- Here we define the geometry of the camera. We designed the camera ourselves, so we have a mesh file that represents it.   
   Else, one can define it using a geometric representation that approximate it, like a cylinder (see commented lines) -->
   <link name="camera_link">
     <visual>
-      <origin xyz="0 0 0" rpy="1.57 3.14 0" />  
+      <origin xyz="0 0 0" rpy="0 0 0" />  
       <geometry>
 	      <!--box size="${camera_link} ${camera_link} ${camera_link}"/-->
-      	<cylinder length="0.05" radius="0.020"/>
+      	<!--cylinder length="0.05" radius="0.020"/-->
+        <mesh filename="package://iiwa_description/meshes/camera/visual/realsense_r200.dae"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="1.57 3.14 0" />  
+      <origin xyz="0 0 0" rpy="0 0 0" />  
       <geometry>
 	      <!--box size="${camera_link} ${camera_link} ${camera_link}"/-->
-      	<cylinder length="0.05" radius="0.020"/>
+        <!--cylinder length="0.05" radius="0.020"/-->
+        <mesh filename="package://iiwa_description/meshes/camera/visual/model.sdf"/>
       </geometry>
       <material name="Blue"/>
     </collision>
@@ -49,7 +51,7 @@
   <joint name="camera_tip_joint" type="fixed">
     <parent link="camera_link" />
     <child link = "camera_link_ee" />
-    <origin xyz="${camera_link_offset}" rpy="1.57 3.14 0" />  
+    <origin xyz="${camera_link_offset}" rpy="0 0 0" />  
   </joint>
   
   <!--  The TCP frame is here defined -->

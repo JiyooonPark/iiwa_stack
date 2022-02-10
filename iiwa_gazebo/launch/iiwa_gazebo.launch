@@ -13,9 +13,9 @@
     
     <arg name="hardware_interface" default="PositionJointInterface" />
     <arg name="robot_name" default="iiwa" />
-    <arg name="model" default="iiwa7"/>
+    <arg name="model" default="iiwa7_camera"/>
     <arg name="trajectory" default="true"/>
-    <arg name="world" default="iiwa" />
+    <arg name="world" default="smooth_curve_world" />
     
     <!-- Loads the Gazebo world. -->
     <include file="$(find iiwa_gazebo)/launch/iiwa_world.launch">

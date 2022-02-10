@@ -11,7 +11,7 @@
     <!-- The is gonna have its nodes/topics under a namespace with the same name. -->
     <arg name="robot_name" default="iiwa"/>
     <!-- Model of the iiwa to use : iiwa7, iiwa14 -->
-    <arg name="model" default="iiwa7"/>
+    <arg name="model" default="iiwa7_camera"/>
     <arg name="rviz" default="true" />
     <arg name="config_name" default ="moveit.rviz" />
 
