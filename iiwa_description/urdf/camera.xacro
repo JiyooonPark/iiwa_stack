@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find iiwa_description)/urdf/iiwa.gazebo.xacro" />
+  <!-- Import Transmissions -->
+  <xacro:include filename="$(find iiwa_description)/urdf/iiwa.transmission.xacro" />
+  <!-- Include Utilities -->
+  <xacro:include filename="$(find iiwa_description)/urdf/utilities.xacro" />
+
+  <!-- camera properties -->
+  <xacro:property name="robot_name" value="iiwa" />
+  <xacro:property name="camera_mass" value="0.200" />
+  <xacro:property name="camera_joint_offset" value="0.00 0.00 0.00" />
+  <xacro:property name="camera_link_offset" value="0.00 0.00 0.1275" />
+  <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
+
+  
+  <!--  Here we define a dummy joint between the tip of the iiwa7 and the base of the camera. 
+  There is no offset between the two, that means the camera is attached at the robot flange. -->
+  <joint name="camera_joint" type="fixed">
+    <parent link="${robot_name}_link_ee" />
+    <child link = "camera_link" />
+    <origin xyz="${camera_joint_offset}" rpy="1.57 3.14 0" />  
+  </joint>
+  
+  <!-- Here we define the geometry of the camera. We designed the camera ourselves, so we have a mesh file that represents it.   
+  Else, one can define it using a geometric representation that approximate it, like a cylinder (see commented lines) -->
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 3.14 0" />  
+      <geometry>
+	      <!--box size="${camera_link} ${camera_link} ${camera_link}"/-->
+      	<cylinder length="0.05" radius="0.020"/>
+      </geometry>
+      <material name="Blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57 3.14 0" />  
+      <geometry>
+	      <!--box size="${camera_link} ${camera_link} ${camera_link}"/-->
+      	<cylinder length="0.05" radius="0.020"/>
+      </geometry>
+      <material name="Blue"/>
+    </collision>
+  </link>
+  
+  <!--  Here we define another dummy joint. It is placed at the end of the camera, so we can then attach a frame at its TCP for control -->
+  <joint name="camera_tip_joint" type="fixed">
+    <parent link="camera_link" />
+    <child link = "camera_link_ee" />
+    <origin xyz="${camera_link_offset}" rpy="1.57 3.14 0" />  
+  </joint>
+  
+  <!--  The TCP frame is here defined -->
+  <link name="camera_link_ee"/>
+  
+</robot>
