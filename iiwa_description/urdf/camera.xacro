@@ -41,7 +41,7 @@
       <geometry>
 	      <!--box size="${camera_link} ${camera_link} ${camera_link}"/-->
         <!--cylinder length="0.05" radius="0.020"/-->
-        <mesh filename="package://iiwa_description/meshes/camera/visual/model.sdf"/>
+        <mesh filename="package://iiwa_description/meshes/camera/visual/realsense_r200.dae"/>
       </geometry>
       <material name="Blue"/>
     </collision>
